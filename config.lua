@@ -1,3 +1,39 @@
+-- Enable powershell as your default shell
+vim.opt.shell = "pwsh.exe -NoLogo"
+vim.opt.shellcmdflag =
+	"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+vim.cmd([[
+		let &shellredir = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+		let &shellpipe = '2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode'
+		set shellquote= shellxquote=
+  ]])
+
+--[[ 
+ * Only for windows 
+ * to solve the problem "... not a valid Win32 application"
+ * install LLVM https://github.com/llvm/llvm-project/releases/tag/llvmorg-16.0.4
+ * add the code below to config.lua
+ * then uninstall treesitter 
+ * reopen LunarVim, a lazy installation window should appear after treesitter is installed again
+ * we are good to go.
+]]
+--
+vim.cmd([[
+  lua require'nvim-treesitter.install'.compilers = { 'clang' }
+]])
+
+-- Set a compatible clipboard manager
+vim.g.clipboard = {
+	copy = {
+		["+"] = "win32yank.exe -i --crlf",
+		["*"] = "win32yank.exe -i --crlf",
+	},
+	paste = {
+		["+"] = "win32yank.exe -o --lf",
+		["*"] = "win32yank.exe -o --lf",
+	},
+}
+---------------------------------------------------------------
 lvim.colorscheme = "gruvbox-material"
 
 vim.opt.fillchars = { eob = " " }
@@ -47,7 +83,7 @@ lvim.builtin.which_key.setup.icons = {
 	breadcrumb = "»",
 	separator = " 󰁔 ",
 	group = "+",
-  get_lvim_base_dir
+	get_lvim_base_dir,
 }
 
 lvim.builtin.which_key.setup.window = {
