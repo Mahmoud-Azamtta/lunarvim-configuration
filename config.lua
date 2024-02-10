@@ -35,8 +35,8 @@ vim.g.clipboard = {
 }
 ---------------------------------------------------------------
 lvim.colorscheme = "gruvbox-material"
-
 vim.opt.fillchars = { eob = " " }
+vim.opt.wrap = true
 
 -- relative line numbering stuff
 vim.wo.number = true
@@ -70,9 +70,25 @@ local function getTime()
 end
 
 lvim.builtin.lualine.sections = {
-	lualine_a = { "mode" },
-	lualine_b = { "branch", "diff", "diagnostics" },
-	lualine_c = { "filename" },
+	lualine_a = {
+		"mode",
+	},
+	lualine_b = {
+		"branch",
+		"diff",
+		{
+			"diagnostics",
+			symbols = {
+				error = " ",
+				warn = " ",
+				info = " ",
+				hint = " ",
+			},
+		},
+	},
+	lualine_c = {
+		"filename",
+	},
 	lualine_x = { "fileformat", "filetype" },
 	lualine_y = { "progress" },
 	lualine_z = { getTime },
@@ -110,6 +126,8 @@ lvim.builtin.cmp.window = {
 lvim.keys.normal_mode["L"] = ":bnext<CR>"
 lvim.keys.normal_mode["H"] = ":bprev<CR>"
 
+lvim.builtin.treesitter.autotag.enable = true
+
 -- plugins
 lvim.plugins = {
 	{
@@ -132,8 +150,9 @@ lvim.plugins = {
 	{
 		"rcarriga/nvim-notify",
 		config = function()
-			require("notify").setup({
-				background_colour = "#1c1c1c", -- I don't know what this does :) but I it is recommended when the backtround is transparent
+			local notify = require("notify")
+			notify.setup({
+				background_colour = "#1c1c1c", -- I don't know what this does :) but it is recommended when the backtround is transparent
 				stages = "fade",
 				render = "compact",
 			})
@@ -177,6 +196,17 @@ lvim.plugins = {
 					timeout_ms = 500,
 				})
 			end, { desc = "Format file or range (in visual mode)" })
+		end,
+	},
+	{
+		"NvChad/nvim-colorizer.lua",
+		config = function()
+			local colorizer = require("colorizer")
+			colorizer.setup({
+				user_default_options = {
+					tailwind = true,
+				},
+			})
 		end,
 	},
 }
