@@ -38,7 +38,7 @@ vim.cmd([[
 ]])
 
 -- lualine configuration
-require("builtins.lualine")
+require("builtins.lualine-config")
 
 -- which key configuration
 require("builtins.whichKey")
