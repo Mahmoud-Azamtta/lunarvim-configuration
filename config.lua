@@ -8,20 +8,6 @@ vim.cmd([[
 		set shellquote= shellxquote=
   ]])
 
---[[ 
- * Only for windows 
- * to solve the problem "... not a valid Win32 application"
- * install LLVM https://github.com/llvm/llvm-project/releases/tag/llvmorg-16.0.4
- * add the code below to config.lua
- * then uninstall treesitter 
- * reopen LunarVim, a lazy installation window should appear after treesitter is installed again
- * we are good to go.
-]]
---
-vim.cmd([[
-  lua require'nvim-treesitter.install'.compilers = { 'clang' }
-]])
-
 -- Set a compatible clipboard manager
 vim.g.clipboard = {
 	copy = {
@@ -33,7 +19,34 @@ vim.g.clipboard = {
 		["*"] = "win32yank.exe -o --lf",
 	},
 }
----------------------------------------------------------------
+-- I have no idea what the code above does :), it was here
+-- when I first launched LunarVim.
+-- I think it may be ralted to windows powershell or something like that
+--------------------------------------------------------------
+
+--[[ 
+ * Only for windows 
+ * to solve the problem "... not a valid Win32 application"
+ * install LLVM https://github.com/llvm/llvm-project/releases/tag/llvmorg-16.0.4
+ * add the code below to config.lua
+ * then uninstall treesitter 
+ * reopen LunarVim, a lazy installation window should appear after treesitter is installed again
+ * we are good to go.
+]]
+vim.cmd([[
+  lua require'nvim-treesitter.install'.compilers = { 'clang' }
+]])
+
+-- lualine configuration
+require("builtins.lualine")
+
+-- which key configuration
+require("builtins.whichKey")
+
+-- keybindings
+require("builtins.keybindings")
+
+-- theme and some editor configs
 lvim.colorscheme = "gruvbox-material"
 vim.opt.fillchars = { eob = " " }
 vim.opt.wrap = true
@@ -42,76 +55,7 @@ vim.opt.wrap = true
 vim.wo.number = true
 vim.wo.relativenumber = true
 
--- lualine configuration
-lvim.builtin.lualine.options = {
-	icons_enabled = true,
-	theme = "gruvbox-material",
-	component_separators = { left = "", right = "" }, -- 
-	section_separators = { left = "", right = "" }, -- 
-}
-
--- function to find current time (hh:mm)
-local function getTime()
-	local time = os.date("*t")
-	local hour = time.hour
-	local am_pm = "AM"
-
-	if hour >= 12 then
-		am_pm = "PM"
-		if hour > 12 then
-			hour = hour - 12
-		end
-	elseif hour == 0 then
-		hour = 12
-	end
-
-	local result = string.format("  %d:%02d %s", hour, time.min, am_pm)
-	return result
-end
-
-lvim.builtin.lualine.sections = {
-	lualine_a = {
-		"mode",
-	},
-	lualine_b = {
-		"branch",
-		"diff",
-		{
-			"diagnostics",
-			symbols = {
-				error = " ",
-				warn = " ",
-				info = " ",
-				hint = " ",
-			},
-		},
-	},
-	lualine_c = {
-		"filename",
-	},
-	lualine_x = { "fileformat", "filetype" },
-	lualine_y = { "progress" },
-	lualine_z = { getTime },
-}
-
--- which key configuration
-lvim.builtin.which_key.setup.icons = {
-	breadcrumb = "»",
-	separator = " 󰁔 ",
-	group = "+",
-	get_lvim_base_dir,
-}
-
-lvim.builtin.which_key.setup.window = {
-	border = "none",
-	margin = { 0, 45, 0, 45 },
-	padding = { 1, 1, 1, 1 },
-	winblend = 10,
-}
-
-lvim.builtin.which_key.setup.show_help = false
-
--- resut the style of cmp completion snippets list
+-- reset the style of cmp completion snippets list
 vim.o.pumblend = 10
 lvim.builtin.cmp.window = {
 	completion = {
@@ -122,91 +66,22 @@ lvim.builtin.cmp.window = {
 	},
 }
 
--- keybindings
-lvim.keys.normal_mode["L"] = ":bnext<CR>"
-lvim.keys.normal_mode["H"] = ":bprev<CR>"
-
+-- enable auto close tag and auto rename tag
+-- Note: nvim-ts-autotag must be installed
 lvim.builtin.treesitter.autotag.enable = true
 
--- plugins
+--[[ plugins ]]
+local gruvbox = require("plugins.gruvbox")
+local noice = require("plugins.noice")
+local notify = require("plugins.notify")
+local conform = require("plugins.conform")
+local colorizer = require("plugins.colorizer")
+
 lvim.plugins = {
-	{
-		"sainnhe/gruvbox-material",
-		config = function()
-			vim.g.gruvbox_material_background = "hard"
-			vim.g.gruvbox_material_foreground = "original"
-			vim.g.gruvbox_material_transparent_background = 1
-		end,
-	},
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-			"rcarriga/nvim-notify",
-		},
-		config = true,
-	},
-	{
-		"rcarriga/nvim-notify",
-		config = function()
-			local notify = require("notify")
-			notify.setup({
-				background_colour = "#1c1c1c", -- I don't know what this does :) but it is recommended when the backtround is transparent
-				stages = "fade",
-				render = "compact",
-			})
-		end,
-	},
+	gruvbox,
+	noice,
+	notify,
+	conform,
+	colorizer,
 	{ "windwp/nvim-ts-autotag" },
-	{
-		--[[
-    -- If the formatter keeps adding "Active page code 1252" to the first line in the file 
-    -- * Open Run on windows sreach for regedit 
-    -- * go to HKEY_LOCAL_MACHINE\Software\Microsoft\Command Processor\Autorun
-    -- * change the value to chcp 1252>$null
-    --]]
-		"stevearc/conform.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		config = function()
-			local conform = require("conform")
-			conform.setup({
-				formatters_by_ft = {
-					javascript = { "prettier" },
-					typescript = { "prettier" },
-					javascriptreact = { "prettier" },
-					typescriptreact = { "prettier" },
-					css = { "prettier" },
-					html = { "prettier" },
-					json = { "prettier" },
-					markdown = { "prettier" },
-					lua = { "stylua" },
-					python = { "isort", "black" },
-				},
-				format_on_save = {
-					lsp_fallback = true,
-					async = false,
-					timeout_ms = 500,
-				},
-			})
-			vim.keymap.set({ "n", "v" }, "<leader>mp", function()
-				conform.format({
-					lsp_fallback = true,
-					async = false,
-					timeout_ms = 500,
-				})
-			end, { desc = "Format file or range (in visual mode)" })
-		end,
-	},
-	{
-		"NvChad/nvim-colorizer.lua",
-		config = function()
-			local colorizer = require("colorizer")
-			colorizer.setup({
-				user_default_options = {
-					tailwind = true,
-				},
-			})
-		end,
-	},
 }
