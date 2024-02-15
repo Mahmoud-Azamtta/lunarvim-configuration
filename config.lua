@@ -69,6 +69,8 @@ lvim.builtin.cmp.window = {
 	},
 }
 
+lvim.builtin.nvimtree.setup.view.preserve_window_proportions = true
+
 -- enable auto close tag and auto rename tag
 -- Note: nvim-ts-autotag must be installed
 lvim.builtin.treesitter.autotag.enable = true
@@ -79,6 +81,7 @@ local noice = require("plugins.noice")
 local notify = require("plugins.notify")
 local conform = require("plugins.conform")
 local colorizer = require("plugins.colorizer")
+local devicons = require("plugins.devicons")
 
 lvim.plugins = {
 	gruvbox,
@@ -86,5 +89,6 @@ lvim.plugins = {
 	notify,
 	conform,
 	colorizer,
+	devicons,
 	{ "windwp/nvim-ts-autotag" },
 }
