@@ -76,19 +76,13 @@ lvim.builtin.nvimtree.setup.view.preserve_window_proportions = true
 lvim.builtin.treesitter.autotag.enable = true
 
 --[[ plugins ]]
-local gruvbox = require("plugins.gruvbox")
-local noice = require("plugins.noice")
-local notify = require("plugins.notify")
-local conform = require("plugins.conform")
-local colorizer = require("plugins.colorizer")
-local devicons = require("plugins.devicons")
 
 lvim.plugins = {
-	gruvbox,
-	noice,
-	notify,
-	conform,
-	colorizer,
-	devicons,
+	require("plugins.gruvbox"),
+	require("plugins.noice"),
+	require("plugins.notify"),
+	require("plugins.conform"),
+	require("plugins.colorizer"),
+	require("plugins.devicons"),
 	{ "windwp/nvim-ts-autotag" },
 }
