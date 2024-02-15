@@ -46,6 +46,9 @@ require("builtins.whichKey")
 -- keybindings
 require("builtins.keybindings")
 
+-- alpha dashboard
+require("builtins.alpha")
+
 -- theme and some editor configs
 lvim.colorscheme = "gruvbox-material"
 vim.opt.fillchars = { eob = " " }
