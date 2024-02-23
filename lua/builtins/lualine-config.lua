@@ -31,6 +31,9 @@ lvim.builtin.lualine.sections = {
 	lualine_b = {
 		"branch",
 		"diff",
+	},
+	lualine_c = {
+		"filename",
 		{
 			"diagnostics",
 			symbols = {
@@ -40,9 +43,6 @@ lvim.builtin.lualine.sections = {
 				hint = " ",
 			},
 		},
-	},
-	lualine_c = {
-		"filename",
 	},
 	lualine_x = { "fileformat", "filetype" },
 	lualine_y = { "progress" },
